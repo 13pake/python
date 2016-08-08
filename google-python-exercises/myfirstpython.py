@@ -1,8 +1,9 @@
 #!/usr/bin/python -tt
 
+# sys = your usual system goods
 # re = regular expresions
 # os = operating system interface, file system
-import sys re os
+import sys
 
 """
 Define functions below:
