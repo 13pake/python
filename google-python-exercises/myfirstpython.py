@@ -27,11 +27,6 @@ def main():
     name = Bob
   print 'Herro there', name
   print repeat('hi ', True)
-  stringy = "this is a multi-line string \
-            "and I don't know exactly how \
-            "it works but I think this is it"
-  print stringy
-
 
 if __name__ == '__main__':
   main()
