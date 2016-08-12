@@ -62,13 +62,17 @@ def main():
   # f.readlines() ## whole file into a list of lines
   # f.read() ## whole file in a single string
 
+  # Files Unicode (used 'import codecs' at the top of the file)
   f = codecs.open('foo.txt','a','utf-8')
   f.write(u'I can read unicode! ch\u00E0o em!')
   f.close()
 
-  # Files Unicode
-
-
+  # Exercise Incremental Development
+  #Do not write it all at once.
+  #Use milestones, then print out your data structures.
+  #Do a sys.exit(0) before the unfinished code.
+  #By doing so you can think about how you need to 
+  #transform your variables to the next state.
 
 if __name__ == '__main__':
   main()

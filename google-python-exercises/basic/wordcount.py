@@ -45,7 +45,14 @@ import sys
 # and builds and returns a word/count dict for it.
 # Then print_words() and print_top() can just call the utility function.
 
-###
+def create_word_count_dict(filename):
+  f = open(filename, 'r')
+
+def print_words(filename):
+
+
+def print_top(filename):
+
 
 # This basic command line argument parsing code is provided and
 # calls the print_words() and print_top() functions which you must define.
