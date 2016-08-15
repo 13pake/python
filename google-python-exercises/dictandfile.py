@@ -14,7 +14,7 @@ def main():
   di['b'] = 'banana'
   di['w'] = 'watermelon'
   print di # {'a': 'apple', 'b': 'banana', 'w': 'watermelon'}
-  print di['w'] # 'watermelon'
+  print di['w'] # 'watermelon' 
   di['b'] = 'berry'
   'a' in di # True
   if 'c' in di: print di['c']

@@ -1,0 +1,10 @@
+Hi hi hi hi hi hi hi.
+This is a test file.
+I like test files.
+They taste like cheeseburgers sometimes.
+Other times they taste like tomatoes.
+But tomatoes are occasionally inside of cheeseburgers.
+This results in an infinite loop of taste.
+Speaking of taste, this loop deviates from the Standard of Taste.
+But regardless, I still like cheeseburgers.
+I wonder if this test file will count the periods.
