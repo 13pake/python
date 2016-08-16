@@ -57,13 +57,11 @@ def create_wordcount_dict(filename):
   return wordcount_dict
 
 def print_words(filename):
-  print create_wordcount_dict(filename)
-
-  #for k,v in create_wordcount_dict(filename):
-  #  print k,v
+  for k,v in create_wordcount_dict(filename).items():
+    print k,v
 
 def print_top(filename):
-  for k,v in create_wordcount_dict(filename).sort():
+  for k,v in sorted(create_wordcount_dict(filename),key=dict.keys(),reverse=True).items()[:20]:
     print k,v
 
 # This basic command line argument parsing code is provided and

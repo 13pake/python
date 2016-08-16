@@ -3,3 +3,4 @@ I like to write in plain text.
 The spacing is oh so good.
 What is the color of the text?
 Nothing! HAHAHAHAHAHAHAHA.
+I can read unicode! chào em!
