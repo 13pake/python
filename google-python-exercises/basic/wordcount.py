@@ -45,6 +45,10 @@ import sys
 # and builds and returns a word/count dict for it.
 # Then print_words() and print_top() can just call the utility function.
 
+#####################
+# Utility Functions #
+#####################
+
 def create_wordcount_dict(filename):
   f = open(filename, 'rU')
   wordcount_dict = {}
@@ -56,12 +60,21 @@ def create_wordcount_dict(filename):
       wordcount_dict[word] += 1
   return wordcount_dict
 
+def wordcount(wordcount_tuple):
+  return wordcount_tuple[1]
+
+##################
+# Main Functions #
+##################
+
 def print_words(filename):
   for k,v in create_wordcount_dict(filename).items():
     print k,v
 
 def print_top(filename):
-  for k,v in sorted(create_wordcount_dict(filename),key=dict.keys(),reverse=True).items()[:20]:
+  tuplees = sorted(create_wordcount_dict(filename).items(),key=wordcount,reverse=True)
+  tuplees = tuplees[:20]
+  for k,v in tuplees:
     print k,v
 
 # This basic command line argument parsing code is provided and
