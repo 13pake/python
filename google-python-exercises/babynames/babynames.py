@@ -41,8 +41,21 @@ def extract_names(filename):
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
   # +++your code here+++
-  return
-
+  f = open(filename, 'rU')
+  whole_file = f.read()
+  f.close()
+  match = re.search(r'Popularity in (\d\d\d\d)', whole_file)
+  final_list = [match.group(1)]
+  truples = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', whole_file)
+  dict_of_names = {}
+  for truple in truples:
+    if dict_of_names.get(truple[1]) == None:
+      dict_of_names[truple[1]] = truple[0]
+    if dict_of_names.get(truple[2]) == None:
+      dict_of_names[truple[2]] = truple[0]
+  for key in sorted(dict_of_names.keys()):
+    final_list.append(str(key + ' ' + dict_of_names[key]))
+  return final_list
 
 def main():
   # This command-line parsing code is provided.
@@ -63,6 +76,14 @@ def main():
   # +++your code here+++
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
+  for filename in args:
+    the_list = extract_names(filename)
+    if summary:
+      f = open(str(filename + '.summary'), 'w')
+      f.write('\n'.join(the_list) + '\n')
+      f.close()
+    else:
+      print '\n'.join(the_list) + '\n'
   
 if __name__ == '__main__':
   main()
