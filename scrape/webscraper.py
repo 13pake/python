@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 def main():
+
   """
   staging.toyotahawaii.com
   """
@@ -40,6 +41,8 @@ def main():
   # Get specs
   old_specs = soup.select('span[class="speci_name"]')
 
+  # TODO: make these into lists
+
   """# Write features to file
   f = open('staging.txt', 'w')
   for spec in specs:
@@ -57,6 +60,9 @@ def main():
   spec_types = ['exterior', 'interior', 'safety_convenience', 'mechanical_performance', 'dimensions', 'weights_capacities', 'tires', 'mpg']
   new_specs = []
 
+  
+  ###f = open('%d.txt' % car_id, 'w')
+
   for spec_type in spec_types:
     url = 'http://www.toyota.com/%s/%d/features/%s/%d' % (car_model, model_year, spec_type, car_id)
     page = requests.get(url)
@@ -65,21 +71,42 @@ def main():
     # Get specs
     new_specs += soup.select('td[class="tcom-datamatrix-subcategory"]')
 
-    """# Standard / N/A / Optional
+    # TODO: make these into lists
+
+    """
+    # Standard / N/A / Optional
     # <td data-column-id="1223">
     td_data = soup.select('td[data-column-id="%d"]' % car_id)
+    
     for td in td_data:
-      print td.get_text().strip()
-    """
+      f.write(td.get_text().strip().encode('utf-8') + '\n')
+    
+  f.close()
+  """
 
   """
   actual vs staging
   """
+
+  def clean(string):
+    return ' '.join(string.split())
+
   def comparsion_is_good(a,b):
-    if new_specs[a].get_text().strip() == old_specs[b].get_text().strip():
+    if clean(new_specs[a].get_text()) == clean(old_specs[b].get_text()):
       return True
     else:
       return False
+  """
+  # fail at comparing lol
+  f = open('compare.txt', 'w')
+  for i in range(len(new_specs)):
+    f.write('\t' + new_specs[i].get_text().strip().encode('utf-8') + '\n')
+    f.write('nup ' + old_specs[i].get_text().strip().encode('utf-8') + '\n')
+  f.close()
+  """
+
+  # TODO: Please clean up this madness
+
   j = 0
   for i in range(len(new_specs)):
     print i,j
@@ -99,8 +126,7 @@ def main():
         print 'BAD: ', new_specs[i].get_text().strip()[:30], 'vs', old_specs[j].get_text().strip()[:30]
       i = k
     j += 1
-
-
+  
 
 if __name__ == '__main__':
   main()
