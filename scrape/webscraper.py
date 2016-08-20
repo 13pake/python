@@ -5,128 +5,87 @@
 
 import sys
 import requests
+import sets
 from bs4 import BeautifulSoup
 
 def main():
 
+  # Command line options
+  if len(sys.argv) != 7:
+    print 'usage: ./webscraper <username> <password> <oldYear> <oldCar> <newYear> <newCar>'
+    sys.exit(0)
+
   """
   staging.toyotahawaii.com
   """
-  car_model = 'prius-liftback'
-  model_year = 2016
-  url = 'http://staging.toyotahawaii.com/compare/%d-%s' % (model_year, car_model)
-
-  # cmd line authentication and open page
-  if len(sys.argv) == 3:
-    page = requests.get(url, auth=(sys.argv[1], sys.argv[2]))
-  else:
-    print 'usage: ./webscraper <username> <password>'
-    sys.exit(0)
+  carmodel = sys.argv[4]
+  modelyear = sys.argv[3]
+  url = 'http://staging.toyotahawaii.com/compare/%s-%s' % (modelyear, carmodel)
+  page = requests.get(url, auth=(sys.argv[1], sys.argv[2]))
+  print url
   soup = BeautifulSoup(page.text, "html.parser")
 
-  """# Standard / N/A / Optional
-  for td in soup.td['class']:
-    print td
-  span_tags = soup.select('td[class="on"] > span')
-  for span in span_tags:
-    print span.get_text() #.strip()
-  """
+  # Standard / N/A / Optional requires special Javascript calls
   
-  """
-  Select only feature text
-  """
+  # Remove disclaimer spans
   for span in soup.select('span[class="disc"]'):
     span.decompose()
   
   # Get specs
-  old_specs = soup.select('span[class="speci_name"]')
-
-  # TODO: make these into lists
-
-  """# Write features to file
-  f = open('staging.txt', 'w')
-  for spec in specs:
-    f.write(spec.get_text().strip().encode('utf-8') + '\n')
-  f.close()
-  """
-  
+  toyotahawaii_specs = soup.select('th > span[class="speci_name"]')
+  old_specs = []
+  for spec in toyotahawaii_specs:
+    old_specs.append(' '.join(spec.get_text().split()))
 
   """
   www.toyota.com
   """
-  car_model = 'prius'
-  model_year = 2017
-  car_id = 1223
+  car_model = sys.argv[6]
+  model_year = sys.argv[5]
+  car_id = 0 # default
   spec_types = ['exterior', 'interior', 'safety_convenience', 'mechanical_performance', 'dimensions', 'weights_capacities', 'tires', 'mpg']
   new_specs = []
 
-  
-  ###f = open('%d.txt' % car_id, 'w')
-
+  # Loop through pages
   for spec_type in spec_types:
-    url = 'http://www.toyota.com/%s/%d/features/%s/%d' % (car_model, model_year, spec_type, car_id)
+    url = 'http://www.toyota.com/%s/%s/features/%s/%s' % (car_model, model_year, spec_type, car_id)
     page = requests.get(url)
+    print url
     soup = BeautifulSoup(page.text, "html.parser")
 
     # Get specs
-    new_specs += soup.select('td[class="tcom-datamatrix-subcategory"]')
-
-    # TODO: make these into lists
+    toyota_specs = (soup.select('td[class="tcom-datamatrix-subcategory"]'))
+    for spec in toyota_specs:
+      new_specs.append(' '.join(spec.get_text().split()))
 
     """
     # Standard / N/A / Optional
-    # <td data-column-id="1223">
-    td_data = soup.select('td[data-column-id="%d"]' % car_id)
-    
-    for td in td_data:
-      f.write(td.get_text().strip().encode('utf-8') + '\n')
-    
+    toyota_values = soup.select('td[data-column-id="%d"]' % car_id)
+    sno_values = []
+    for value in toyota_values:
+      sno_values.append(' '.join(spec.get_text().split()))
+
+  for value in sno_values:
+    f.write(value.encode('utf-8') + '\n')
   f.close()
   """
 
   """
-  actual vs staging
+  Actual vs staging
   """
+  new_specs = set(new_specs)
+  old_specs = set(old_specs)
+  newer_specs = new_specs.difference(old_specs)
+  older_specs = old_specs.difference(new_specs)
 
-  def clean(string):
-    return ' '.join(string.split())
-
-  def comparsion_is_good(a,b):
-    if clean(new_specs[a].get_text()) == clean(old_specs[b].get_text()):
-      return True
-    else:
-      return False
-  """
-  # fail at comparing lol
-  f = open('compare.txt', 'w')
-  for i in range(len(new_specs)):
-    f.write('\t' + new_specs[i].get_text().strip().encode('utf-8') + '\n')
-    f.write('nup ' + old_specs[i].get_text().strip().encode('utf-8') + '\n')
+  f = open('%s-vs-%s-%s-features-difference.txt' % (model_year, modelyear, car_model), 'w')
+  f.write('\nNEW SPECS\n')
+  for spec in newer_specs:
+    f.write(spec.encode('utf-8') + '\n\n')
+  f.write('\nOLD SPECS\n')
+  for spec in older_specs:
+    f.write(spec.encode('utf-8') + '\n\n')
   f.close()
-  """
-
-  # TODO: Please clean up this madness
-
-  j = 0
-  for i in range(len(new_specs)):
-    print i,j
-    if comparsion_is_good(i,j):
-      print 'GOOD:', new_specs[i].get_text().strip()[:60]
-    else:
-      # while comparison is not true
-      k = i
-      while not comparsion_is_good(i,j) and i < len(old_specs)-1:
-        i += 1
-      if comparsion_is_good(i,j): # a skip happened
-        for i in range(j,i):
-          print 'DNE: ', new_specs[i].get_text().strip()[:60]
-        print 'GOOD:', new_specs[i].get_text().strip()[:60]
-      else:
-        j = i
-        print 'BAD: ', new_specs[i].get_text().strip()[:30], 'vs', old_specs[j].get_text().strip()[:30]
-      i = k
-    j += 1
-  
 
 if __name__ == '__main__':
   main()
